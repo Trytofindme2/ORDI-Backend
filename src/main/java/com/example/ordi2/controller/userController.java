@@ -1,26 +1,26 @@
 package com.example.ordi2.controller;
 
-import com.example.ordi2.DTO.ApiResponse;
-import com.example.ordi2.DTO.ReceipeDTO;
-import com.example.ordi2.DTO.UserUpdateRequest;
-import com.example.ordi2.DTO.VerificationRequest;
+import com.example.ordi2.DTO.*;
 import com.example.ordi2.model.Receipe;
+import com.example.ordi2.model.Report;
+import com.example.ordi2.model.SavePosts;
 import com.example.ordi2.model.User;
 import com.example.ordi2.response.LoginResponse;
 import com.example.ordi2.response.errorMessage;
 import com.example.ordi2.response.successMessage;
-import com.example.ordi2.service.emailService;
-import com.example.ordi2.service.receipeService;
-import com.example.ordi2.service.userService;
+import com.example.ordi2.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -32,11 +32,15 @@ public class userController
     private final userService userService;
     private final emailService emailService;
     private final receipeService receipeService;
+    private final reportService reportService;
+    private final savePostService savePostService;
 
-    public userController(userService userService , emailService emailService , receipeService receipeService){
+    public userController(userService userService , emailService emailService , receipeService receipeService , reportService reportService, savePostService savePostService){
         this.userService = userService;
         this.emailService = emailService;
         this.receipeService = receipeService;
+        this.reportService = reportService;
+        this.savePostService = savePostService;
     }
 
     @GetMapping("/start")
@@ -151,6 +155,49 @@ public class userController
         ApiResponse<Object>response = new ApiResponse<>("success" , receipeList);
         return ResponseEntity.status(200).body(response);
     }
+
+    @PostMapping("/submitReport")
+    public ResponseEntity<ApiResponse<?>>submitReport(@RequestBody ReportDTO report){
+        Report submitReport = reportService.submitReport(report.getReportedBy() , report.getReceipe() , report.getReportReason());
+        ApiResponse<Object>response = new ApiResponse<>("success" , submitReport);
+        return ResponseEntity.status(200).body(response);
+    }
+
+    @PostMapping("/savePost")
+    public ResponseEntity<?> savePost(@RequestBody Map<String, UUID> body) {
+        UUID postId = body.get("postId");
+        UUID userId = body.get("userId");
+
+        boolean saved = savePostService.savePost(postId, userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("saved", saved);
+        response.put("message", saved ? "Post saved successfully" : "Already saved");
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/unsavePost")
+    public ResponseEntity<?> unsavePost(@RequestParam UUID postId, @RequestParam UUID userId) {
+        boolean deleted = savePostService.unsavePost(postId, userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("unsaved", deleted);
+        response.put("message", deleted ? "Post unsaved successfully" : "Not found in saved posts");
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/isSaved")
+    public ResponseEntity<?> isSaved(@RequestParam UUID postId, @RequestParam UUID userId) {
+        boolean saved = savePostService.isSaved(postId, userId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("saved", saved);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/savePostList/{userId}")
+    public ResponseEntity<ApiResponse<List<SavedPostResponseDTO>>> getSavedPostsByUser(@PathVariable UUID userId) {
+        List<SavedPostResponseDTO> savedPosts = savePostService.getSavedPostsByUser(userId);
+        return ResponseEntity.ok(new ApiResponse<>("success", savedPosts));
+    }
+
 
 
 }

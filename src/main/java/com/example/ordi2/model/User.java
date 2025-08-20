@@ -26,7 +26,6 @@ public class User {
     private String role = "User";
 
 
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Receipe> receipes;
@@ -64,7 +63,7 @@ public class User {
         }
     }
 
-    // Getters and Setters
+
 
     public UUID getId() {
         return id;

@@ -2,14 +2,17 @@ package com.example.ordi2.controller;
 
 
 import com.example.ordi2.DTO.ApiResUser;
+import com.example.ordi2.DTO.ReportResponseDTO;
 import com.example.ordi2.DTO.UserUpdateRequest;
 import com.example.ordi2.model.Admin;
+import com.example.ordi2.model.Report;
 import com.example.ordi2.model.User;
 import com.example.ordi2.response.successMessage;
 import com.example.ordi2.service.adminService;
 import com.example.ordi2.response.LoginResponse;
 import com.example.ordi2.response.errorMessage;
 import com.example.ordi2.DTO.ApiResponse;
+import com.example.ordi2.service.reportService;
 import com.example.ordi2.service.userService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,11 +32,13 @@ public class adminController
 {
 
     private final adminService adminService;
+    private final reportService reportService;
 
     @Autowired
-    public adminController(adminService adminService )
+    public adminController(adminService adminService, reportService reportService)
     {
         this.adminService = adminService;
+        this.reportService = reportService;
 
     }
 
@@ -122,5 +127,17 @@ public class adminController
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
+
+    @GetMapping("/getReports")
+    public Page<ReportResponseDTO> getReports(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "reportAt") String sortBy,
+            @RequestParam(defaultValue = "false") boolean ascending
+    ) {
+        return reportService.getReportsDTO(page, size, sortBy, ascending);
+    }
+
+
 
 }
