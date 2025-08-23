@@ -28,7 +28,10 @@ public class Receipe
 
     private LocalDateTime postAt;
 
+    @ElementCollection
     private List<String> imageUrls;
+
+    private String videoUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -37,7 +40,7 @@ public class Receipe
 
     public Receipe(){};
 
-    public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime, int cookingTime, LocalDateTime postAt, User user, List<String> imageUrls) {
+    public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime, int cookingTime, LocalDateTime postAt, User user, List<String> imageUrls , String videoUrl) {
         this.title = title;
         this.description = description;
         this.difficulty = difficulty;
@@ -47,6 +50,7 @@ public class Receipe
         this.postAt = postAt;
         this.user = user;
         this.imageUrls = imageUrls;
+        this.videoUrl = videoUrl;
     }
 
     public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime, int cookingTime, List<String> imageUrls, User user) {
@@ -59,6 +63,8 @@ public class Receipe
         this.imageUrls = imageUrls;
         this.user = user;
     }
+
+
 
 
     @PrePersist
@@ -144,5 +150,13 @@ public class Receipe
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getVideoUrl() {
+        return videoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.videoUrl = videoUrl;
     }
 }

@@ -55,6 +55,11 @@ public class receipeService
         }).collect(Collectors.toList());
     }
 
+    public Receipe getReceipeById(UUID id) throws Exception {
+        return receipeRepo.findById(id)
+                .orElseThrow(() -> new Exception("Recipe not found with id: " + id));
+    }
+
 
 
 }

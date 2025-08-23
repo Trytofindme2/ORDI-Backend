@@ -14,8 +14,8 @@ public class WebConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // allow all routes
-                        .allowedOrigins("http://localhost:5173") // your Vite frontend URL
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173") // your React/Vite frontend
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
@@ -23,8 +23,23 @@ public class WebConfig {
 
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                // Profile images
                 registry.addResourceHandler("/profile-images/**")
-                        .addResourceLocations("file:///D:/ORDI2.0/src/main/resources/profile-images/");
+                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images/")
+                        .setCachePeriod(0)
+                        .resourceChain(true);
+
+                // Recipe images
+                registry.addResourceHandler("/api/images/view/**")
+                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-images/")
+                        .setCachePeriod(0)
+                        .resourceChain(true);
+
+                // Recipe videos
+                registry.addResourceHandler("/api/videos/view/**")
+                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-video/")
+                        .setCachePeriod(0)
+                        .resourceChain(true);
             }
         };
     }

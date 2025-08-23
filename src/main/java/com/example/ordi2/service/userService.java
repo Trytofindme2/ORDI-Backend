@@ -46,6 +46,10 @@ public class userService
     public LoginResponse userLogIn(String email , String password) {
        User user = userRepo.findUserByEmail(email);
        if(user != null){
+
+           if(!user.getAccount_status().equalsIgnoreCase("Active")){
+               throw new customException("Account has been banned.");
+           }
            String dbPassword = user.getPassword();
            if(passwordEncoder.matches(password,dbPassword)){
                String token = generator.generateToken(email,user.getId());
@@ -74,41 +78,39 @@ public class userService
         }
         User user = existingUser.get();
 
-        if (userUpdateRequest.getName() != null) {
-            user.setName(userUpdateRequest.getName());
-        }
-        if (userUpdateRequest.getPhoneNumber() != null) {
-            user.setPhoneNumber(userUpdateRequest.getPhoneNumber());
-        }
-        if (userUpdateRequest.getBio() != null) {
-            user.setBio(userUpdateRequest.getBio());
-        }
-        if (userUpdateRequest.getAddress() != null) {
-            user.setAddress(userUpdateRequest.getAddress());
-        }
+        // Update basic fields
+        if (userUpdateRequest.getName() != null) user.setName(userUpdateRequest.getName());
+        if (userUpdateRequest.getPhoneNumber() != null) user.setPhoneNumber(userUpdateRequest.getPhoneNumber());
+        if (userUpdateRequest.getBio() != null) user.setBio(userUpdateRequest.getBio());
+        if (userUpdateRequest.getAddress() != null) user.setAddress(userUpdateRequest.getAddress());
 
+        // Handle profile image upload
         if (profileImage != null && !profileImage.isEmpty()) {
-            String uploadDir = "D:/ORDI2.0/src/main/resources/profile-images/";
+            String uploadDir = "/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images/";
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
+
             String originalFilename = profileImage.getOriginalFilename();
             String fileExtension = "";
-
             if (originalFilename != null && originalFilename.contains(".")) {
                 fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
             }
+
             String filename = id.toString() + "_" + System.currentTimeMillis() + fileExtension;
             Path filePath = uploadPath.resolve(filename);
             profileImage.transferTo(filePath.toFile());
-            user.setProfile_URl("/profile-images/" + filename);
+
+            // Save the HTTP-accessible path
+            user.setProfile_URl("/" + filename); // served from static-locations
         } else if (userUpdateRequest.getProfile_URl() != null) {
             user.setProfile_URl(userUpdateRequest.getProfile_URl());
         }
 
         return userRepo.save(user);
     }
+
 
 
 }

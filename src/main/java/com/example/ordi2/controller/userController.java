@@ -12,16 +12,20 @@ import com.example.ordi2.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.checkerframework.checker.units.qual.A;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @RestController
 @RequestMapping("/user")
@@ -66,6 +70,16 @@ public class userController
             return ResponseEntity.status(401).body(response);
         }
     }
+
+//    @GetMapping("/me")
+//    public ResponseEntity<ApiResponse<UserDTO>> getCurrentUser(@AuthenticationPrincipal User user) {
+//        if (user == null) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+//        }
+//        UserDTO dto = UserDTO.fromEntity(user);
+//        return ResponseEntity.ok(new ApiResponse<>("success", dto));
+//    }
+
 
     @GetMapping("/findByEmail/{email}")
     public ResponseEntity<ApiResponse<Object>> findByEmail(@PathVariable("email")String email){
@@ -123,12 +137,60 @@ public class userController
         return ResponseEntity.status(200).body(response);
     }
 
-    @PostMapping("/createReceipe/{id}")
-    public ResponseEntity<ApiResponse<Object>>createReceipe(@PathVariable("id")UUID id , @RequestBody Receipe receipe)
-    {
-        Receipe createReceipe = receipeService.createReceipe(id,receipe);
-        ApiResponse<Object>response = new ApiResponse<>("success" , createReceipe);
-        return ResponseEntity.status(200).body(response);
+    @PostMapping(value = "/createReceipe/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<ApiResponse<Object>> createReceipe(
+            @PathVariable("id") UUID id,
+            @RequestPart("receipe") Receipe receipe,
+            @RequestPart(value = "video", required = false) MultipartFile videoFile,
+            @RequestPart(value = "images", required = false) List<MultipartFile> imageFiles
+    ) {
+        try {
+            if (videoFile != null && !videoFile.isEmpty()) {
+                String videoDir = "/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-video/";
+                File dir = new File(videoDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                String filename = UUID.randomUUID() + "_" + videoFile.getOriginalFilename();
+                Path filePath = Paths.get(videoDir + filename);
+                Files.write(filePath, videoFile.getBytes());
+
+                receipe.setVideoUrl("/api/videos/view/" + filename);
+            }
+
+            if (imageFiles != null && !imageFiles.isEmpty()) {
+                String imageDir = "/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-images/";
+                File dir = new File(imageDir);
+                if (!dir.exists()) dir.mkdirs();
+
+                List<String> imageUrls = new ArrayList<>();
+                for (MultipartFile imageFile : imageFiles) {
+                    String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+                    Path filePath = Paths.get(imageDir + filename);
+                    Files.write(filePath, imageFile.getBytes());
+
+                    imageUrls.add("/api/images/view/" + filename);
+                }
+                receipe.setImageUrls(imageUrls);
+            }
+            Receipe created = receipeService.createReceipe(id, receipe);
+            ApiResponse<Object> response = new ApiResponse<>("success", created);
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ApiResponse<Object> response = new ApiResponse<>("error", e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+
+    @GetMapping("/getPostDetail/{id}")
+    public ResponseEntity<ApiResponse<Object>> getReceipeById(@PathVariable("id") UUID id) {
+        try {
+            Receipe receipe = receipeService.getReceipeById(id);
+            return ResponseEntity.ok(new ApiResponse<>("success", receipe));
+        } catch (Exception e) {
+            return ResponseEntity.status(404)
+                    .body(new ApiResponse<>("error", e.getMessage()));
+        }
     }
 
     @GetMapping("/getReceipeByUserId/{id}")
