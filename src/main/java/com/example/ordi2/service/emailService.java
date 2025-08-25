@@ -58,9 +58,9 @@ public class emailService
         return true;
     }
 
-    public void resendVerificationCode(){
-
-    }
+//    public void resendVerificationCode(){
+//
+//    }
 
     public void sendVerificationCode(String receiver_mail , String code){
         User user = userRepo.findUserByEmail(receiver_mail);

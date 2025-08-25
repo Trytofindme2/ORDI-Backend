@@ -12,8 +12,8 @@ public class SavePosts
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false, foreignKey = @ForeignKey(name = "FK_recipe_savepost"))
     private Receipe receipe;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,5 +1,6 @@
 package com.example.ordi2.DTO;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ReportDTO
@@ -14,6 +15,11 @@ public class ReportDTO
         this.reportedBy = reportedBy;
         this.receipe = receipe;
         this.reportReason = reportReason;
+    }
+
+    public ReportDTO(UUID id, String name, String profileURl, UUID id1, String reportReason, LocalDateTime reportAt)
+    {
+
     }
 
     public UUID getReportedBy() {

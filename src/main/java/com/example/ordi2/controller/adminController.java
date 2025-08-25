@@ -1,9 +1,7 @@
 package com.example.ordi2.controller;
 
 
-import com.example.ordi2.DTO.ApiResUser;
-import com.example.ordi2.DTO.ReportResponseDTO;
-import com.example.ordi2.DTO.UserUpdateRequest;
+import com.example.ordi2.DTO.*;
 import com.example.ordi2.model.Admin;
 import com.example.ordi2.model.Report;
 import com.example.ordi2.model.User;
@@ -11,7 +9,7 @@ import com.example.ordi2.response.successMessage;
 import com.example.ordi2.service.adminService;
 import com.example.ordi2.response.LoginResponse;
 import com.example.ordi2.response.errorMessage;
-import com.example.ordi2.DTO.ApiResponse;
+import com.example.ordi2.service.receipeService;
 import com.example.ordi2.service.reportService;
 import com.example.ordi2.service.userService;
 import jakarta.servlet.http.Cookie;
@@ -33,13 +31,14 @@ public class adminController
 
     private final adminService adminService;
     private final reportService reportService;
+    private final receipeService receipeService;
 
     @Autowired
-    public adminController(adminService adminService, reportService reportService)
+    public adminController(adminService adminService, reportService reportService, receipeService receipeService)
     {
         this.adminService = adminService;
         this.reportService = reportService;
-
+        this.receipeService = receipeService;
     }
 
    @PostMapping("/create")
@@ -113,6 +112,7 @@ public class adminController
         }
     }
 
+
     @PostMapping("/updateAccountStatus/{userid}")
     public ResponseEntity<ApiResponse<Object>> updateAccountStatus(
             @PathVariable("userid") UUID userid,
@@ -138,6 +138,20 @@ public class adminController
         return reportService.getReportsDTO(page, size, sortBy, ascending);
     }
 
+    @GetMapping("/ReviewReportDetail/{postId}")
+    public ResponseEntity<RecipeWithReportsDTO> getRecipeWithReports(@PathVariable("postId") UUID postId) {
+        RecipeWithReportsDTO dto = reportService.getRecipeWithReports(postId);
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteRecipe(@PathVariable UUID id) {
+        boolean deleted = receipeService.deleteRecipeById(id);
+        if (deleted) {
+            return ResponseEntity.ok("Recipe and its reports were deleted successfully.");
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recipe not found.");
+    }
 
 
 }

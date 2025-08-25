@@ -5,6 +5,7 @@ import com.example.ordi2.model.Receipe;
 import com.example.ordi2.model.User;
 import com.example.ordi2.repo.receipeRepo;
 import com.example.ordi2.repo.userRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,6 +35,26 @@ public class receipeService
         return receipeRepo.findByUser_Id(userid);
     }
 
+    public List<ReceipeDTO> getOwnPostByUserId(UUID userId) {
+        List<Receipe> receipes = receipeRepo.findByUser_Id(userId);
+
+        return receipes.stream().map(receipe -> new ReceipeDTO(
+                receipe.getId(),
+                receipe.getTitle(),
+                receipe.getDescription(),
+                receipe.getDifficulty(),
+                receipe.getIngredients(),
+                receipe.getPreparationTime(),
+                receipe.getCookingTime(),
+                receipe.getPostAt(),
+                receipe.getImageUrls(),
+                receipe.getUser().getId(),
+                receipe.getUser().getName(),
+                receipe.getUser().getProfile_URl()
+        )).toList();
+    }
+
+
     public List<ReceipeDTO> getAllReceipePost() {
         List<Receipe> receipes = receipeRepo.findAllByOrderByPostAtDesc(); // Sorted here
         return receipes.stream().map(r -> {
@@ -60,6 +81,11 @@ public class receipeService
                 .orElseThrow(() -> new Exception("Recipe not found with id: " + id));
     }
 
-
-
+    public boolean deleteRecipeById(UUID receipeId) {
+        return receipeRepo.findById(receipeId).map(receipe -> {
+            receipeRepo.delete(receipe);
+            return true;
+        }).orElse(false);
+    }
+    
 }

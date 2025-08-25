@@ -90,4 +90,8 @@ public class savePostService
             );
         }).collect(Collectors.toList());
     }
+
+    public long getSaveCountForPost(UUID postId) {
+        return savePostRepo.countByReceipeId(postId);
+    }
 }

@@ -3,7 +3,6 @@ package com.example.ordi2.controller;
 import com.example.ordi2.DTO.*;
 import com.example.ordi2.model.Receipe;
 import com.example.ordi2.model.Report;
-import com.example.ordi2.model.SavePosts;
 import com.example.ordi2.model.User;
 import com.example.ordi2.response.LoginResponse;
 import com.example.ordi2.response.errorMessage;
@@ -11,14 +10,10 @@ import com.example.ordi2.response.successMessage;
 import com.example.ordi2.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -260,6 +255,28 @@ public class userController
         return ResponseEntity.ok(new ApiResponse<>("success", savedPosts));
     }
 
+    @GetMapping("/count/{postId}")
+    public long getSaveCount(@PathVariable UUID postId) {
+        return savePostService.getSaveCountForPost(postId);
+    }
 
+    @GetMapping("/getOwnPost/{userId}")
+    public ResponseEntity<ApiResponse<List<ReceipeDTO>>> getOwnPostByUserId(@PathVariable("userId") UUID userId) {
+        try {
+            List<ReceipeDTO> userPosts = receipeService.getOwnPostByUserId(userId);
 
+            ApiResponse<List<ReceipeDTO>> response = new ApiResponse<>(
+                    "success",
+                    userPosts
+            );
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            ApiResponse<List<ReceipeDTO>> response = new ApiResponse<>(
+                    "error",
+                    null
+            );
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 }
