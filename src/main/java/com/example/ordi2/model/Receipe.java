@@ -1,12 +1,18 @@
 package com.example.ordi2.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 
 @Entity
 public class Receipe
@@ -34,9 +40,9 @@ public class Receipe
 
     private String videoUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
     private User user;
 
     @OneToMany(mappedBy = "receipe", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -44,22 +50,17 @@ public class Receipe
 
     @OneToMany(mappedBy = "receipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SavePosts> savePosts = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "receipe", cascade = CascadeType.ALL)
+    private List<Comments> comments = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "receipe", cascade = CascadeType.ALL)
+    private List<Reaction>  reactions = new ArrayList<>();
 
 
     public Receipe(){};
 
-    public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime, int cookingTime, LocalDateTime postAt, User user, List<String> imageUrls , String videoUrl) {
-        this.title = title;
-        this.description = description;
-        this.difficulty = difficulty;
-        this.ingredients = ingredients;
-        this.preparationTime = preparationTime;
-        this.cookingTime = cookingTime;
-        this.postAt = postAt;
-        this.user = user;
-        this.imageUrls = imageUrls;
-        this.videoUrl = videoUrl;
-    }
+    
 
     public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime, int cookingTime, List<String> imageUrls, User user) {
         this.title = title;
@@ -75,7 +76,33 @@ public class Receipe
 
 
 
-    @PrePersist
+    
+
+
+
+	public Receipe(String title, String description, String difficulty, List<String> ingredients, int preparationTime,
+			int cookingTime, LocalDateTime postAt, List<String> imageUrls, String videoUrl, User user,
+			List<Report> reports, List<SavePosts> savePosts, List<Comments> comments, List<Reaction> reactions) {
+		super();
+		this.title = title;
+		this.description = description;
+		this.difficulty = difficulty;
+		this.ingredients = ingredients;
+		this.preparationTime = preparationTime;
+		this.cookingTime = cookingTime;
+		this.postAt = postAt;
+		this.imageUrls = imageUrls;
+		this.videoUrl = videoUrl;
+		this.user = user;
+		this.reports = reports;
+		this.savePosts = savePosts;
+		this.comments = comments;
+		this.reactions = reactions;
+	}
+
+
+
+	@PrePersist
     public void setPostAtBeforePersist() {
         this.postAt = LocalDateTime.now();
     }
@@ -175,4 +202,46 @@ public class Receipe
     public void setReports(List<Report> reports) {
         this.reports = reports;
     }
+
+
+
+	public List<SavePosts> getSavePosts() {
+		return savePosts;
+	}
+
+
+
+	public void setSavePosts(List<SavePosts> savePosts) {
+		this.savePosts = savePosts;
+	}
+
+
+
+	public List<Comments> getComments() {
+		return comments;
+	}
+
+
+
+	public void setComments(List<Comments> comments) {
+		this.comments = comments;
+	}
+
+
+
+	public List<Reaction> getReactions() {
+		return reactions;
+	}
+
+
+
+	public void setReactions(List<Reaction> reactions) {
+		this.reactions = reactions;
+	}
+
+
+
+
+    
+    
 }

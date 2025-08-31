@@ -18,12 +18,41 @@ public class ReceipeDTO {
     private UUID userId;
     private String name;
     private String userProfileUrl;
+    private String useremail;
+    private boolean friendstatus;
+    private boolean followstatus;
+    private boolean friendrequeststatus;
+    private int reactionCount;
+    private int commentCount;
 
     public ReceipeDTO() {}
+    
+    
 
     public ReceipeDTO(UUID id, String title, String description, String difficulty, List<String> ingredients,
-                      int preparationTime, int cookingTime, LocalDateTime postAt, List<String> imageUrls,
-                      UUID userId, String username, String userProfileUrl) {
+			int preparationTime, int cookingTime, LocalDateTime postAt, List<String> imageUrls, UUID userId,
+			String name, String userProfileUrl, String useremail) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.difficulty = difficulty;
+		this.ingredients = ingredients;
+		this.preparationTime = preparationTime;
+		this.cookingTime = cookingTime;
+		this.postAt = postAt;
+		this.imageUrls = imageUrls;
+		this.userId = userId;
+		this.name = name;
+		this.userProfileUrl = userProfileUrl;
+		this.useremail = useremail;
+	}
+
+
+
+	public ReceipeDTO(UUID id, String title, String description, String difficulty, List<String> ingredients,
+                      int preparationTime, int cookingTime, LocalDateTime postAt, List<String> imageUrls,int reactionCount,int commentCount,
+                      UUID userId, String username,String userProfileUrl,String useremail) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -33,12 +62,46 @@ public class ReceipeDTO {
         this.cookingTime = cookingTime;
         this.postAt = postAt;
         this.imageUrls = imageUrls;
+        this.reactionCount = reactionCount;
+        this.commentCount = commentCount;
         this.userId = userId;
         this.name = username;
         this.userProfileUrl = userProfileUrl;
+        this.useremail = useremail;
+        
     }
+	
+	
 
-    // Getters & Setters
+    public ReceipeDTO(UUID id, String title, String description, String difficulty, List<String> ingredients,
+			int preparationTime, int cookingTime, LocalDateTime postAt, List<String> imageUrls, boolean friendstatus, boolean followstatus,
+			boolean friendrequeststatus, int reactionCount, int commentCount, UUID userId,
+			String name, String userProfileUrl, String useremail) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.difficulty = difficulty;
+		this.ingredients = ingredients;
+		this.preparationTime = preparationTime;
+		this.cookingTime = cookingTime;
+		this.postAt = postAt;
+		this.imageUrls = imageUrls;
+		this.friendstatus = friendstatus;
+		this.followstatus = followstatus;
+		this.friendrequeststatus = friendrequeststatus;
+		this.reactionCount = reactionCount;
+		this.commentCount = commentCount;
+		this.userId = userId;
+		this.name = name;
+		this.userProfileUrl = userProfileUrl;
+		this.useremail = useremail;
+		
+	}
+
+
+
+	// Getters & Setters
     public UUID getId() {
         return id;
     }
@@ -134,4 +197,71 @@ public class ReceipeDTO {
     public void setUserProfileUrl(String userProfileUrl) {
         this.userProfileUrl = userProfileUrl;
     }
+
+	public int getReactionCount() {
+		return reactionCount;
+	}
+
+	public void setReactionCount(int reactionCount) {
+		this.reactionCount = reactionCount;
+	}
+
+	public int getCommentCount() {
+		return commentCount;
+	}
+
+	public void setCommentCount(int commentCount) {
+		this.commentCount = commentCount;
+	}
+
+
+
+	public String getUseremail() {
+		return useremail;
+	}
+
+
+
+	public void setUseremail(String useremail) {
+		this.useremail = useremail;
+	}
+
+
+
+	public boolean isFriendstatus() {
+		return friendstatus;
+	}
+
+
+
+	public void setFriendstatus(boolean friendstatus) {
+		this.friendstatus = friendstatus;
+	}
+
+
+
+	public boolean isFollowstatus() {
+		return followstatus;
+	}
+
+
+
+	public void setFollowstatus(boolean followstatus) {
+		this.followstatus = followstatus;
+	}
+
+
+
+	public boolean isFriendrequeststatus() {
+		return friendrequeststatus;
+	}
+
+
+
+	public void setFriendrequeststatus(boolean friendrequeststatus) {
+		this.friendrequeststatus = friendrequeststatus;
+	}
+    
+    
+    
 }

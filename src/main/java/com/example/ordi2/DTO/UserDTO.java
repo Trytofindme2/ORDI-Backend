@@ -14,6 +14,7 @@ public class UserDTO {
     private String address;
     private String account_status;
     private String role;
+    
 
     public UserDTO() {}
 

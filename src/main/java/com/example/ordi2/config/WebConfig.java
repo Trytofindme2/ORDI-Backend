@@ -9,38 +9,57 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig {
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // your React/Vite frontend
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowedHeaders("*")
-                        .allowCredentials(true);
-            }
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurer() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("http://localhost:5173") // your React/Vite frontend
+						.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS").allowedHeaders("*")
+						.allowCredentials(true);
+			}
+//            @Override
+//            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//                registry.addResourceHandler("/profile-images/**")
+//                        .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/profile-images/")
+//                        .setCachePeriod(0)
+//                        .resourceChain(true);
+//
+//                registry.addResourceHandler("/api/images/view/**")
+//                        .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/receipe-images/")
+//                        .setCachePeriod(0)
+//                        .resourceChain(true);
+//
+//                registry.addResourceHandler("/api/videos/view/**")
+//                        .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/receipe-video/")
+//                        .setCachePeriod(0)
+//                        .resourceChain(true);
+//            }
 
-            @Override
-            public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                // Profile images
-                registry.addResourceHandler("/profile-images/**")
-                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images/")
-                        .setCachePeriod(0)
-                        .resourceChain(true);
+			@Override
+			public void addResourceHandlers(ResourceHandlerRegistry registry) {
+				// Profile images
+//                registry.addResourceHandler("/profile-images/**")
+//                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images/")
+//                        .setCachePeriod(0)
+//                        .resourceChain(true);
+				registry.addResourceHandler("/uploads/profile-images/**")
+						.addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/profile-images/")
+						.setCachePeriod(0)
+						.resourceChain(true);
 
-                // Recipe images
-                registry.addResourceHandler("/api/images/view/**")
-                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-images/")
-                        .setCachePeriod(0)
-                        .resourceChain(true);
+				// Recipe images
+				registry.addResourceHandler("/api/images/view/**")
+						.addResourceLocations(
+								"file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-images/")
+						.setCachePeriod(0).resourceChain(true);
 
-                // Recipe videos
-                registry.addResourceHandler("/api/videos/view/**")
-                        .addResourceLocations("file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-video/")
-                        .setCachePeriod(0)
-                        .resourceChain(true);
-            }
-        };
-    }
+				// Recipe videos
+				registry.addResourceHandler("/api/videos/view/**")
+						.addResourceLocations(
+								"file:/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/receipe-video/")
+						.setCachePeriod(0).resourceChain(true);
+			}
+		};
+	}
 }

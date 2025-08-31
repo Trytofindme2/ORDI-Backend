@@ -1,13 +1,20 @@
 package com.example.ordi2.model;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
 
     @Id
@@ -26,9 +33,28 @@ public class User {
     private String role = "User";
 
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Receipe> receipes;
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JsonManagedReference
+//    private List<Receipe> receipes;
+    @OneToMany(mappedBy = "sender")
+    @JsonManagedReference("sentRequests")
+    private List<FriendRequestUser> sentRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    @JsonManagedReference("receivedRequests")
+    private List<FriendRequestUser> receivedRequests = new ArrayList<>();
+
+    @ManyToMany
+    @JsonIgnoreProperties({"friends", "followers", "following", "sentRequests", "receivedRequests"})
+    private Set<User> friends = new HashSet<>();
+
+    @ManyToMany
+    @JsonIgnoreProperties({"friends", "followers", "following", "sentRequests", "receivedRequests"})
+    private Set<User> followers = new HashSet<>();
+
+    @ManyToMany
+    @JsonIgnoreProperties({"friends", "followers", "following", "sentRequests", "receivedRequests"})
+    private Set<User> following = new HashSet<>();
 
     public User() {}
 
@@ -40,7 +66,7 @@ public class User {
     }
 
     public User(String name, String profile_URl, String email, String phoneNumber, String password, String bio,
-                String address, String account_status, String role,  List<Receipe> receipes) {
+                String address, String account_status, String role) {
         this.name = name;
         this.profile_URl = profile_URl;
         this.email = email;
@@ -50,7 +76,8 @@ public class User {
         this.address = address;
         this.account_status = account_status;
         this.role = role;
-        this.receipes = receipes;
+//        this.receipes = receipes;
+//        List<Receipe> receipes
     }
 
     @PrePersist
@@ -142,11 +169,54 @@ public class User {
     }
 
 
-    public List<Receipe> getReceipes() {
-        return receipes;
-    }
+//    public List<Receipe> getReceipes() {
+//        return receipes;
+//    }
+//
+//    public void setReceipes(List<Receipe> receipes) {
+//        this.receipes = receipes;
+//    }
 
-    public void setReceipes(List<Receipe> receipes) {
-        this.receipes = receipes;
-    }
+	public List<FriendRequestUser> getSentRequests() {
+		return sentRequests;
+	}
+
+	public void setSentRequests(List<FriendRequestUser> sentRequests) {
+		this.sentRequests = sentRequests;
+	}
+
+	public List<FriendRequestUser> getReceivedRequests() {
+		return receivedRequests;
+	}
+
+	public void setReceivedRequests(List<FriendRequestUser> receivedRequests) {
+		this.receivedRequests = receivedRequests;
+	}
+
+	public Set<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(Set<User> friends) {
+		this.friends = friends;
+	}
+
+	public Set<User> getFollowers() {
+		return followers;
+	}
+
+	public void setFollowers(Set<User> followers) {
+		this.followers = followers;
+	}
+
+	public Set<User> getFollowing() {
+		return following;
+	}
+
+	public void setFollowing(Set<User> following) {
+		this.following = following;
+	}
+
+	
+    
 }

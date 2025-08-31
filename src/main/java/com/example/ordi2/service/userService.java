@@ -1,5 +1,6 @@
 package com.example.ordi2.service;
 
+import com.example.ordi2.DTO.UserDTO;
 import com.example.ordi2.DTO.UserUpdateRequest;
 import com.example.ordi2.helper.TokenGenerator;
 import com.example.ordi2.helper.customException;
@@ -19,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -77,39 +79,82 @@ public class userService
             throw new customException("User account doesn't exist");
         }
         User user = existingUser.get();
-
-        // Update basic fields
         if (userUpdateRequest.getName() != null) user.setName(userUpdateRequest.getName());
         if (userUpdateRequest.getPhoneNumber() != null) user.setPhoneNumber(userUpdateRequest.getPhoneNumber());
         if (userUpdateRequest.getBio() != null) user.setBio(userUpdateRequest.getBio());
         if (userUpdateRequest.getAddress() != null) user.setAddress(userUpdateRequest.getAddress());
-
-        // Handle profile image upload
         if (profileImage != null && !profileImage.isEmpty()) {
-            String uploadDir = "/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images/";
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+//        	String uploadDir = "/home/lucas/Dev/Java EE/ORDI-Backend/src/main/resources/profile-images";
+//        	Path uploadPath = Paths.get(uploadDir);
+//
+//        	if (!Files.exists(uploadPath)) {
+//        	    Files.createDirectories(uploadPath);
+//        	}
+//
+//        	String originalFilename = profileImage.getOriginalFilename();
+//        	String fileExtension = "";
+//        	if (originalFilename != null && originalFilename.contains(".")) {
+//        	    fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+//        	}
+//
+//        	String filename = id.toString() + "_" + System.currentTimeMillis() + fileExtension;
+//        	Path filePath = uploadPath.resolve(filename);
+//
+//        	// Save the file
+//        	profileImage.transferTo(filePath.toFile());
+//
+//        	// URL that frontend can use
+//        	
+//
+//
+//            // Save the HTTP-accessible path
+//            user.setProfile_URl("/" + filename); // served from static-locations
+        	String uploadDir = System.getProperty("user.dir") + "/uploads/profile-images";
+        	Path uploadPath = Paths.get(uploadDir);
 
-            String originalFilename = profileImage.getOriginalFilename();
-            String fileExtension = "";
-            if (originalFilename != null && originalFilename.contains(".")) {
-                fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
-            }
+        	if (!Files.exists(uploadPath)) {
+        	    Files.createDirectories(uploadPath);
+        	}
 
-            String filename = id.toString() + "_" + System.currentTimeMillis() + fileExtension;
-            Path filePath = uploadPath.resolve(filename);
-            profileImage.transferTo(filePath.toFile());
+        	String originalFilename = profileImage.getOriginalFilename();
+        	String fileExtension = "";
+        	if (originalFilename != null && originalFilename.contains(".")) {
+        	    fileExtension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        	}
 
-            // Save the HTTP-accessible path
-            user.setProfile_URl("/" + filename); // served from static-locations
+        	String filename = id.toString() + "_" + System.currentTimeMillis() + fileExtension;
+        	Path filePath = uploadPath.resolve(filename);
+
+        	profileImage.transferTo(filePath.toFile());
+
+        	user.setProfile_URl("profile-images/" + filename);
+
         } else if (userUpdateRequest.getProfile_URl() != null) {
             user.setProfile_URl(userUpdateRequest.getProfile_URl());
         }
 
         return userRepo.save(user);
     }
+
+	public User getUserById(UUID addUserId) {
+		// TODO Auto-generated method stub
+		return userRepo.findById(addUserId).get();
+	}
+
+	public void saveUser(User user) {
+		// TODO Auto-generated method stub
+		userRepo.save(user);
+	}
+
+	public List<User> getAllFriends() {
+		// TODO Auto-generated method stub
+		return userRepo.findAll();
+	}
+	
+	public List<User> getAllUsers() {
+		// TODO Auto-generated method stub
+		return userRepo.findAll();
+	}
 
 
 
