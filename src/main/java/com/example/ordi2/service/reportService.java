@@ -37,6 +37,15 @@ public class reportService
         this.userRepo = userRepo;
     }
 
+    @Transactional
+    public boolean deleteReport(UUID id) {
+        if (reportRepo.existsById(id)) {
+            reportRepo.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
     public Report submitReport(UUID userid , UUID postId , String reportReason){
         User user = userRepo.findById(userid)
                 .orElseThrow(() -> new customException("User not found"));

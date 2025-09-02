@@ -17,4 +17,5 @@ public interface reportRepo extends JpaRepository<Report , UUID>
 {
     Page<Report> findAll(Pageable pageable);
 
+    boolean deleteReportById(UUID id);
 }

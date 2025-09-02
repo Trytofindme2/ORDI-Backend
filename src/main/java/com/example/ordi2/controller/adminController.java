@@ -99,20 +99,6 @@ public class adminController
         return ResponseEntity.ok("Admin logged out successfully");
     }
 
-    @DeleteMapping("/deleteUserById/{userid}")
-    public ResponseEntity<ApiResponse<Object>>deleteUserById(@PathVariable("userid")UUID userid)
-    {
-        try{
-            boolean isDeleted = adminService.deleteUserById(userid);
-            ApiResponse<Object> response = new ApiResponse<>("success", new successMessage("successfully deleted"));
-            return ResponseEntity.status(200).body(response);
-        }catch (Exception exception){
-            ApiResponse<Object> response = new ApiResponse<>("failed", new errorMessage(exception.getMessage()));
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-
-
     @PostMapping("/updateAccountStatus/{userid}")
     public ResponseEntity<ApiResponse<Object>> updateAccountStatus(
             @PathVariable("userid") UUID userid,
@@ -152,6 +138,23 @@ public class adminController
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Recipe not found.");
     }
+
+
+    @DeleteMapping("/deleteReport/{id}")
+    public ResponseEntity<ApiResponse<?>> deleteReportById(@PathVariable UUID id) {
+        boolean isDeleted = reportService.deleteReport(id);
+
+        if (isDeleted) {
+            return ResponseEntity.ok(
+                    new ApiResponse<>("success", "Report deleted successfully.")
+            );
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new ApiResponse<>("failed", "Report not found or could not be deleted."));
+        }
+    }
+
 
 
 }

@@ -15,10 +15,13 @@ import com.example.ordi2.response.successMessage;
 import com.example.ordi2.service.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,13 +69,25 @@ public class userController {
 		return ResponseEntity.status(200).body(response);
 	}
 
+	@GetMapping("/user/{userid}")
+	public ResponseEntity<ApiResponse<Object>> getUserById(@PathVariable("userid") UUID userid) {
+		try {
+			User user = userService.getUserById(userid); // Implement in service
+			ApiResponse<Object> response = new ApiResponse<>("success", user);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			ApiResponse<Object> response = new ApiResponse<>("failed", new errorMessage(e.getMessage()));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
 	@PostMapping("/log-in")
 	public ResponseEntity<ApiResponse<Object>> LogIn(@RequestBody User user, HttpServletResponse httpServletResponse) {
 		try {
 			LoginResponse loginResponse = userService.userLogIn(user.getEmail(), user.getPassword());
 			Cookie cookie = new Cookie("user-token", loginResponse.getToken());
 			cookie.setHttpOnly(true);
-			cookie.setSecure(true);
+			cookie.setSecure(false);
 			cookie.setPath("/");
 			cookie.setMaxAge(7 * 24 * 60 * 60);
 			httpServletResponse.addCookie(cookie);
@@ -84,14 +99,6 @@ public class userController {
 		}
 	}
 
-//    @GetMapping("/me")
-//    public ResponseEntity<ApiResponse<UserDTO>> getCurrentUser(@AuthenticationPrincipal User user) {
-//        if (user == null) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
-//        }
-//        UserDTO dto = UserDTO.fromEntity(user);
-//        return ResponseEntity.ok(new ApiResponse<>("success", dto));
-//    }
 
 	@PostMapping("/sendVerificationCode")
 	public ResponseEntity<ApiResponse<Object>> sendVerificationCode(@RequestBody User user) {

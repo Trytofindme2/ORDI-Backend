@@ -15,6 +15,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class ChatMessage {
@@ -35,10 +37,13 @@ public class ChatMessage {
 	
 	private boolean isRead = false;
 	private LocalDateTime sentAt;
-	
+
 	@ManyToOne
-    @JoinColumn(name = "receipe_id")
-    private Receipe sendReceipe;
+	@JoinColumn(name = "receipe_id")
+	@OnDelete(action = OnDeleteAction.SET_NULL)
+	private Receipe sendReceipe;
+
+
 	public ChatMessage() {
 		super();
 		// TODO Auto-generated constructor stub

@@ -58,6 +58,10 @@ public class Receipe
     private List<Reaction>  reactions = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "sendReceipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatMessage> chatMessages = new ArrayList<>();
+
+
     public Receipe(){};
 
     

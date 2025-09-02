@@ -31,13 +31,16 @@ public class ChatController {
 	public void recMessage(@Payload Message message) throws Exception {
 		User sender = userService.findUserByEmail(message.getSenderEmail());
 		User receiver = userService.findUserByEmail(message.getReceiverEmail());
-		Receipe receipe = receipeService.getReceipeById(message.getReceipeId());
+
 		ChatMessage chatMessage = new ChatMessage();
 		chatMessage.setSender(sender);
 		chatMessage.setReceiver(receiver);
 		chatMessage.setTextContent(message.getTextContent());
-		chatMessage.setSendReceipe(receipe);
 		chatMessage.setSentAt(LocalDateTime.now());
+		if (message.getReceipeId() != null) {
+			Receipe receipe = receipeService.getReceipeById(message.getReceipeId());
+			chatMessage.setSendReceipe(receipe);
+		}
 		chatMessageService.save(chatMessage);
 		simpMessagingTemplate.convertAndSendToUser(receiver.getEmail(), "/queue/private", message);
 		simpMessagingTemplate.convertAndSendToUser(sender.getEmail(), "/queue/private", message);

@@ -80,15 +80,6 @@ public class adminService {
         return userRepo.findAll(Sort.by("name").ascending());
     }
 
-    @Transactional
-    public boolean deleteUserById(UUID userid){
-        int EffectedRow =  userRepo.deleteUserById(userid);
-        if(EffectedRow == 0){
-            throw new customException("cannot delete user");
-        }
-        return true;
-    }
-
     public User updateUserStatus(UUID userid, String status) {
         User user = userRepo.findUserById(userid)
                 .orElseThrow(() -> new customException("User Account doesn't exist"));

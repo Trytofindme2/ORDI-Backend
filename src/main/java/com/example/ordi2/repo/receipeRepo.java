@@ -22,4 +22,6 @@ public interface receipeRepo extends JpaRepository<Receipe, UUID>
             "LEFT JOIN FETCH rep.reportedBy " +
             "WHERE r.id = :id")
     Optional<Receipe> findByIdWithReportsAndUsers(@Param("id") UUID id);
+
+
 }
